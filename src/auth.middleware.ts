@@ -14,7 +14,7 @@ export const WSAuthMiddleware = (
   return async (socket: Socket, next) => {
     try {
       const result = await authService.getUserInfo(socket.handshake.auth.token);
-      if (socket.handshake.auth) {
+      if (result?.status === authService.OK_HTTP_STATUS) {
         next();
       } else {
         next({
