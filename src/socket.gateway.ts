@@ -8,15 +8,17 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { WSAuthMiddleware } from './auth.middleware';
+import { AuthService } from "./auth/auth.service";
 
 @WebSocketGateway()
 export class SocketGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() private server!: Server;
+  constructor(private readonly authService: AuthService) {}
 
   afterInit(server: Server): void {
-    const middle = WSAuthMiddleware();
+    const middle = WSAuthMiddleware(this.authService);
     server.use(middle);
     console.log(`WS init`);
   }
