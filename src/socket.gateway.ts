@@ -23,19 +23,23 @@ export class SocketGateway
     console.log(`WS init`);
   }
 
-  handleConnection(client: Socket, ...args: any[]): any {
+  handleConnection(client: AuthSocket, ...args: any[]): any {
     console.log('connect', client.id);
   }
 
-  handleDisconnect(client: Socket): any {
-    console.log('disconnect', client.id);
+  handleDisconnect(client: AuthSocket): any {
+    console.log('disconnect', client.userId);
   }
 
   @SubscribeMessage('message')
-  handleMessage(client: Socket, payload: any): string {
+  handleMessage(client: AuthSocket, payload: any): string {
     return 'Hello world!';
   }
   getGateway() {
     return this.server;
   }
+}
+
+export interface AuthSocket extends Socket {
+  userId: string;
 }
