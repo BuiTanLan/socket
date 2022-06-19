@@ -5,7 +5,7 @@ import axios from 'axios';
 export class AuthService {
   private logger = new Logger('AuthService');
   OK_HTTP_STATUS = 200;
-  authorizationUrl = 'https://account-dev.tpos.dev/api/identity/my-profile';
+  authorizationUrl = 'https://tmt.account.tmtco.dev/api/identity/my-profile';
 
   async getUserInfo(token: string) {
     try {
