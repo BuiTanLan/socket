@@ -6,24 +6,26 @@ import * as winston from 'winston';
 import 'winston-daily-rotate-file';
 import { SeqTransport } from '@datalust/winston-seq';
 import { format } from "winston";
+import { INestApplication } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { Transport } from "@nestjs/microservices";
 
 
 async function bootstrap() {
-  const transports  = createTransports();
+
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({
-      level: 'info',
-      format: winston.format.combine(  /* This is required to get errors to log with stack traces. See https://github.com/winstonjs/winston/issues/1498 */
-        winston.format.errors({ stack: true }),
-      ),
-      transports: transports
+      transports: createTransports()
     }),
-
   });
+  const configService = app.get(ConfigService);
+
+  createKafkaTransport(app,configService);
 
   const redisIoAdapter = new RedisIoAdapter(app);
   redisIoAdapter.connectToRedis();
   app.useWebSocketAdapter(redisIoAdapter);
+  await app.startAllMicroservices();
   await app.listen(3000);
 
 }
@@ -68,6 +70,27 @@ function createTransports(): winston.transport[]{
     ]
   }
   return transports;
+}
+function createKafkaTransport(
+  app: INestApplication,
+  configService:  ConfigService<any>) {
+  const KAFKA_BROKER = configService.get<string>('KAFKA_BROKER') ?? 'localhost:9092';
+  const KAFKA_GROUP_ID = configService.get<string>('KAFKA_GROUP_ID') ?? 'socket';
+  app.connectMicroservice({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: [KAFKA_BROKER],
+        retry: {
+          initialRetryTime: 1000,
+          retries: 10
+        }
+      },
+      consumer: {
+        groupId: KAFKA_GROUP_ID,
+      },
+    },
+  });
 }
 
 void bootstrap();
