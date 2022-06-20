@@ -8,7 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { WSAuthMiddleware } from './auth.middleware';
-import { AuthService } from "./auth/auth.service";
+import { AuthService } from './auth/auth.service';
 
 @WebSocketGateway()
 export class SocketGateway
@@ -20,7 +20,6 @@ export class SocketGateway
   afterInit(server: Server): void {
     const middle = WSAuthMiddleware(this.authService);
     server.use(middle);
-    console.log(`WS init`);
   }
 
   handleConnection(client: AuthSocket, ...args: any[]): any {
