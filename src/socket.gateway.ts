@@ -24,6 +24,7 @@ export class SocketGateway
 
   handleConnection(client: AuthSocket, ...args: any[]): any {
     console.log('connect', client.id);
+    client.join('6')
   }
 
   handleDisconnect(client: AuthSocket): any {

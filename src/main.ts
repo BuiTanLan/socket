@@ -4,11 +4,12 @@ import { RedisIoAdapter } from './socket.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
 
   const redisIoAdapter = new RedisIoAdapter(app);
   redisIoAdapter.connectToRedis();
   app.useWebSocketAdapter(redisIoAdapter);
+  await app.listen(3000);
+
 }
 
 void bootstrap();
