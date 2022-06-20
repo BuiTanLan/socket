@@ -9,18 +9,15 @@ export class AuthService {
 
   async getUserInfo(token: string) {
     try {
-      if (this.authorizationUrl) {
-        const response = await axios.get(this.authorizationUrl, {
-          headers: {
-            Authorization: `bearer ${token}`,
-          },
-        });
-        if (response) {
-          return response;
-        }
-      }
+      const response = await axios.get(this.authorizationUrl, {
+        headers: {
+          Authorization: `bearer ${token}`,
+        },
+      });
+      return response ? response : null;
     } catch (err: any) {
       this.logger.error('Get user info', err);
+      return null;
     }
   }
 }

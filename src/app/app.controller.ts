@@ -4,14 +4,14 @@ import { Server } from "socket.io";
 
 @Controller('app')
 export class AppController {
-  io: Server | null = null;
+  io: Server;
   constructor(private readonly socketGateway: SocketGateway,
   ) {
     this.io = this.socketGateway.getGateway();
   }
   @Get()
   findAll(): string {
-    this.socketGateway.getGateway().to('6').emit('chat','lan');
+    this.io.to('6').emit('chat','lan');
     return 'This action returns all cats';
   }
 }
