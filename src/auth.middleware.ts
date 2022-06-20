@@ -12,24 +12,29 @@ export const WSAuthMiddleware = (
   authService: AuthService,
 ): SocketMiddleware => {
   return async (socket: Socket, next) => {
-    try {
-      const result = await authService.getUserInfo(socket.handshake.auth['token']);
-      if (result?.status === authService.OK_HTTP_STATUS) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        socket['userId'] = 6;
-        next();
-      } else {
+    authService.getUserInfo(socket.handshake.auth['token']).subscribe({
+      next: result => {
+        if (result?.status === authService.OK_HTTP_STATUS) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          socket["userId"] = 6;
+          next();
+        } else {
+          next({
+            name: "Unauthorized",
+            message: "Unauthorized"
+          });
+        }
+      },
+      error: err => {
         next({
-          name: 'Unauthorized',
-          message: 'Unauthorized',
+          name: "Unauthorized",
+          message: "Unauthorized"
         });
+        console.log(err.message);
       }
-    } catch (error) {
-      next({
-        name: 'Unauthorized',
-        message: 'Unauthorized',
-      });
-    }
+    });
+
+
   };
 };
