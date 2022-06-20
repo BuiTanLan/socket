@@ -35,7 +35,7 @@ export class SocketGateway
   handleMessage(client: AuthSocket, payload: any): string {
     return 'Hello world!';
   }
-  getGateway() {
+  getIO() {
     return this.server;
   }
 }
