@@ -21,17 +21,21 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@datalust/winston-seq": "^1.0.2",
     "@nestjs/common": "^8.4.7",
     "@nestjs/core": "^8.4.7",
     "@nestjs/platform-express": "^8.4.7",
     "@nestjs/platform-socket.io": "^8.4.7",
     "@socket.io/redis-adapter": "^7.2.0",
     "ioredis": "^5.0.6",
+    "nest-winston": "^1.6.2",
     "redis": "^4.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.5",
-    "socket.io": "^4.5.1"
+    "socket.io": "^4.5.1",
+    "winston": "^3.7.2",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.2.6",
