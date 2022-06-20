@@ -8,7 +8,7 @@ import { SeqTransport } from '@datalust/winston-seq';
 import { format } from "winston";
 import { INestApplication } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Transport } from "@nestjs/microservices";
+import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 
 
 async function bootstrap() {
@@ -18,16 +18,22 @@ async function bootstrap() {
       transports: createTransports()
     }),
   });
-  const configService = app.get(ConfigService);
-
-  createKafkaTransport(app,configService);
+  const configService = app.get<ConfigService>(ConfigService);
 
   const redisIoAdapter = new RedisIoAdapter(app);
   redisIoAdapter.connectToRedis();
   app.useWebSocketAdapter(redisIoAdapter);
-  await app.startAllMicroservices();
-  await app.listen(3000);
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+    options: {
+      port: 3001,
+    },
+  });
+  createKafkaTransport(app,configService);
 
+
+  await app.startAllMicroservices();
+  await app.listen(3001)
 }
 
 function createTransports(): winston.transport[]{
@@ -73,7 +79,7 @@ function createTransports(): winston.transport[]{
 }
 function createKafkaTransport(
   app: INestApplication,
-  configService:  ConfigService<any>) {
+  configService: ConfigService) {
   const KAFKA_BROKER = configService.get<string>('KAFKA_BROKER') ?? 'localhost:9092';
   const KAFKA_GROUP_ID = configService.get<string>('KAFKA_GROUP_ID') ?? 'socket';
   app.connectMicroservice({
@@ -83,7 +89,7 @@ function createKafkaTransport(
         brokers: [KAFKA_BROKER],
         retry: {
           initialRetryTime: 1000,
-          retries: 10
+          retries: 100
         }
       },
       consumer: {
