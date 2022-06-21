@@ -1,6 +1,5 @@
 import { Controller, Get, Logger } from "@nestjs/common";
 import { SocketGateway } from "../socket.gateway";
-import { Server } from "socket.io";
 
 @Controller('app')
 export class AppController {

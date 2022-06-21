@@ -8,7 +8,7 @@ import { SeqTransport } from '@datalust/winston-seq';
 import { format } from "winston";
 import { INestApplication } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { MicroserviceOptions, Transport } from "@nestjs/microservices";
+import { Transport } from "@nestjs/microservices";
 
 
 async function bootstrap() {
@@ -18,20 +18,12 @@ async function bootstrap() {
       transports: createTransports()
     }),
   });
-  const configService = app.get<ConfigService>(ConfigService);
 
+  const configService = app.get<ConfigService>(ConfigService);
   const redisIoAdapter = new RedisIoAdapter(app);
   redisIoAdapter.connectToRedis();
   app.useWebSocketAdapter(redisIoAdapter);
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.TCP,
-    options: {
-      port: 3001,
-    },
-  });
   createKafkaTransport(app,configService);
-
-
   await app.startAllMicroservices();
   await app.listen(3001)
 }
@@ -88,9 +80,9 @@ function createKafkaTransport(
       client: {
         brokers: [KAFKA_BROKER],
         retry: {
-          initialRetryTime: 1000,
-          retries: 100
-        }
+          maxRetryTime: 60000,
+          retries: 1000,
+        },
       },
       consumer: {
         groupId: KAFKA_GROUP_ID,

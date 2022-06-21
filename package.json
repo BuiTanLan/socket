@@ -33,7 +33,6 @@
     "ioredis": "^5.0.6",
     "kafkajs": "^2.0.2",
     "nest-winston": "^1.6.2",
-    "redis": "^4.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.5",
